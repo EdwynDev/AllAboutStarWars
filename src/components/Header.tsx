@@ -27,7 +27,7 @@ const Header: React.FC<HeaderProps> = ({ onSearch, searchQuery, onToggleMenu, is
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-blue-400" size={20} />
               <input
                 type="text"
-                placeholder="Search the galaxy..."
+                placeholder="Search in the galaxy..."
                 value={searchQuery}
                 onChange={(e) => onSearch(e.target.value)}
                 className="bg-gray-900/50 border border-blue-500/30 rounded-full pl-10 pr-4 py-2 text-white placeholder-gray-400 focus:outline-none focus:border-blue-400 focus:ring-2 focus:ring-blue-400/20 transition-all duration-200"

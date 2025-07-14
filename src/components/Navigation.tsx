@@ -16,12 +16,12 @@ const Navigation: React.FC<NavigationProps> = ({
   onClose 
 }) => {
   const resources = [
-    { id: 'characters' as ResourceType, label: 'Characters', icon: Users, count: '964+' },
+    { id: 'characters' as ResourceType, label: 'Characters', icon: Users, count: '900+' },
     { id: 'droids' as ResourceType, label: 'Droids', icon: Bot, count: '50+' },
-    { id: 'species' as ResourceType, label: 'Species', icon: Dna, count: '100+' },
-    { id: 'locations' as ResourceType, label: 'Locations', icon: MapPin, count: '200+' },
-    { id: 'organizations' as ResourceType, label: 'Organizations', icon: Shield, count: '150+' },
-    { id: 'vehicles' as ResourceType, label: 'Vehicles', icon: Car, count: '300+' },
+    { id: 'species' as ResourceType, label: 'Species', icon: Dna, count: '80+' },
+    { id: 'locations' as ResourceType, label: 'Locations', icon: MapPin, count: '300+' },
+    { id: 'organizations' as ResourceType, label: 'Organizations', icon: Shield, count: '100+' },
+    { id: 'vehicles' as ResourceType, label: 'Vehicles', icon: Car, count: '200+' },
   ];
 
   const handleResourceClick = (resource: ResourceType) => {
