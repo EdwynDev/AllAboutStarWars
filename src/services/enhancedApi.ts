@@ -385,8 +385,6 @@ export class EnhancedStarWarsAPI {
     switch (type) {
       case 'characters':
         return this.getEnhancedCharacters();
-      case 'films':
-        return this.getEnhancedFilms();
       case 'droids':
         return StarWarsAPI.getDroids(); // No SWAPI equivalent for droids specifically
       case 'species':

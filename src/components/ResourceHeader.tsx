@@ -17,13 +17,6 @@ const ResourceHeader: React.FC<ResourceHeaderProps> = ({ resource, count }) => {
           description: 'Heroes, villains, and everyone in between from the Star Wars universe.',
           gradient: 'from-blue-500 to-cyan-500'
         };
-      case 'films':
-        return {
-          icon: Film,
-          title: 'Films',
-          description: 'The epic saga of Star Wars movies and their stories.',
-          gradient: 'from-yellow-500 to-amber-500'
-        };
       case 'droids':
         return {
           icon: Bot,

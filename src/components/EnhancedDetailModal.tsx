@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
-import { X, ChevronDown, ChevronUp, Users, Bot, Dna, MapPin, Shield, Car, Film, Calendar, Globe, Zap, Wrench, Clock, DollarSign, Gauge, Package, User, Star } from 'lucide-react';
+import { X, ChevronDown, ChevronUp, Users, Bot, Dna, MapPin, Shield, Car, Calendar, Globe, Zap, Wrench, Clock, DollarSign, Gauge, Package, User, Star } from 'lucide-react';
 import { ResourceType } from '../types/starwars';
-import { EnhancedCharacter, EnhancedLocation, EnhancedSpecies, EnhancedVehicle, EnhancedFilm } from '../services/enhancedApi';
+import { EnhancedCharacter, EnhancedLocation, EnhancedSpecies, EnhancedVehicle } from '../services/enhancedApi';
 
 interface EnhancedDetailModalProps {
   data: any;
@@ -25,9 +25,21 @@ const EnhancedDetailModal: React.FC<EnhancedDetailModalProps> = ({ data, type, i
     setExpandedSections(newExpanded);
   };
 
+  // Fonction pour formater les valeurs avec la première lettre en majuscule
+  const formatValue = (value: string | number | undefined | null): string => {
+    if (!value || value === 'unknown' || value === 'n/a') return 'Unknown';
+    const str = String(value);
+    return str.charAt(0).toUpperCase() + str.slice(1).toLowerCase();
+  };
+
+  // Fonction pour formater les valeurs numériques avec unités
+  const formatValueWithUnit = (value: string | undefined, unit: string): string => {
+    if (!value || value === 'unknown' || value === 'n/a') return 'Unknown';
+    return `${value} ${unit}`;
+  };
+
   const getIcon = () => {
     switch (type) {
-      case 'films': return Film;
       case 'characters': return Users;
       case 'droids': return Bot;
       case 'species': return Dna;
@@ -106,61 +118,72 @@ const EnhancedDetailModal: React.FC<EnhancedDetailModalProps> = ({ data, type, i
     const details = [];
     
     switch (type) {
-      case 'films':
-        if (data.episode_id) details.push({ label: 'Episode', value: `Episode ${data.episode_id}`, icon: Film });
-        if (data.director) details.push({ label: 'Director', value: data.director, icon: User });
-        if (data.producer) details.push({ label: 'Producer', value: data.producer, icon: User });
-        if (data.release_date) details.push({ label: 'Release Date', value: new Date(data.release_date).toLocaleDateString(), icon: Calendar });
-        if (data.swapi_data?.created) details.push({ label: 'Added to Database', value: new Date(data.swapi_data.created).toLocaleDateString(), icon: Clock });
-        break;
-        
       case 'characters':
         if (data.swapi_data?.birth_year) details.push({ label: 'Birth Year', value: data.swapi_data.birth_year, icon: Calendar });
-        if (data.swapi_data?.gender) details.push({ label: 'Gender', value: data.swapi_data.gender, icon: User });
-        if (data.swapi_data?.height) details.push({ label: 'Height', value: `${data.swapi_data.height} cm`, icon: Gauge });
-        if (data.swapi_data?.mass) details.push({ label: 'Mass', value: `${data.swapi_data.mass} kg`, icon: Package });
-        if (data.swapi_data?.hair_color) details.push({ label: 'Hair Color', value: data.swapi_data.hair_color, icon: User });
-        if (data.swapi_data?.skin_color) details.push({ label: 'Skin Color', value: data.swapi_data.skin_color, icon: User });
-        if (data.swapi_data?.eye_color) details.push({ label: 'Eye Color', value: data.swapi_data.eye_color, icon: User });
+        if (data.swapi_data?.gender) details.push({ label: 'Gender', value: formatValue(data.swapi_data.gender), icon: User });
+        if (data.swapi_data?.height) details.push({ label: 'Height', value: formatValueWithUnit(data.swapi_data.height, 'cm'), icon: Gauge });
+        if (data.swapi_data?.mass) details.push({ label: 'Mass', value: formatValueWithUnit(data.swapi_data.mass, 'kg'), icon: Package });
+        if (data.swapi_data?.hair_color) details.push({ label: 'Hair Color', value: formatValue(data.swapi_data.hair_color), icon: User });
+        if (data.swapi_data?.skin_color) details.push({ label: 'Skin Color', value: formatValue(data.swapi_data.skin_color), icon: User });
+        if (data.swapi_data?.eye_color) details.push({ label: 'Eye Color', value: formatValue(data.swapi_data.eye_color), icon: User });
+        break;
+        
+      case 'droids':
+        if (data.model) details.push({ label: 'Model', value: formatValue(data.model), icon: Bot });
+        if (data.manufacturer) details.push({ label: 'Manufacturer', value: formatValue(data.manufacturer), icon: Wrench });
+        if (data.class) details.push({ label: 'Class', value: formatValue(data.class), icon: Bot });
+        if (data.height) details.push({ label: 'Height', value: formatValueWithUnit(data.height, 'cm'), icon: Gauge });
+        if (data.mass) details.push({ label: 'Mass', value: formatValueWithUnit(data.mass, 'kg'), icon: Package });
+        if (data.color) details.push({ label: 'Color', value: formatValue(data.color), icon: User });
         break;
         
       case 'locations':
-        if (data.swapi_data?.diameter) details.push({ label: 'Diameter', value: `${data.swapi_data.diameter} km`, icon: Globe });
-        if (data.swapi_data?.rotation_period) details.push({ label: 'Rotation Period', value: `${data.swapi_data.rotation_period} hours`, icon: Clock });
-        if (data.swapi_data?.orbital_period) details.push({ label: 'Orbital Period', value: `${data.swapi_data.orbital_period} days`, icon: Clock });
+        if (data.swapi_data?.diameter) details.push({ label: 'Diameter', value: formatValueWithUnit(data.swapi_data.diameter, 'km'), icon: Globe });
+        if (data.swapi_data?.rotation_period) details.push({ label: 'Rotation Period', value: formatValueWithUnit(data.swapi_data.rotation_period, 'hours'), icon: Clock });
+        if (data.swapi_data?.orbital_period) details.push({ label: 'Orbital Period', value: formatValueWithUnit(data.swapi_data.orbital_period, 'days'), icon: Clock });
         if (data.swapi_data?.gravity) details.push({ label: 'Gravity', value: `${data.swapi_data.gravity} standard`, icon: Zap });
-        if (data.swapi_data?.population) details.push({ label: 'Population', value: data.swapi_data.population, icon: Users });
-        if (data.swapi_data?.climate) details.push({ label: 'Climate', value: data.swapi_data.climate, icon: Globe });
-        if (data.swapi_data?.terrain) details.push({ label: 'Terrain', value: data.swapi_data.terrain, icon: MapPin });
+        if (data.swapi_data?.population) details.push({ label: 'Population', value: formatValue(data.swapi_data.population), icon: Users });
+        if (data.swapi_data?.climate) details.push({ label: 'Climate', value: formatValue(data.swapi_data.climate), icon: Globe });
+        if (data.swapi_data?.terrain) details.push({ label: 'Terrain', value: formatValue(data.swapi_data.terrain), icon: MapPin });
         if (data.swapi_data?.surface_water) details.push({ label: 'Surface Water', value: `${data.swapi_data.surface_water}%`, icon: Globe });
         break;
         
       case 'species':
-        if (data.swapi_data?.classification) details.push({ label: 'Classification', value: data.swapi_data.classification, icon: Dna });
-        if (data.swapi_data?.designation) details.push({ label: 'Designation', value: data.swapi_data.designation, icon: Dna });
-        if (data.swapi_data?.average_height) details.push({ label: 'Average Height', value: `${data.swapi_data.average_height} cm`, icon: Gauge });
-        if (data.swapi_data?.average_lifespan) details.push({ label: 'Average Lifespan', value: `${data.swapi_data.average_lifespan} years`, icon: Clock });
-        if (data.swapi_data?.language) details.push({ label: 'Language', value: data.swapi_data.language, icon: Globe });
-        if (data.swapi_data?.skin_colors) details.push({ label: 'Skin Colors', value: data.swapi_data.skin_colors, icon: User });
-        if (data.swapi_data?.hair_colors) details.push({ label: 'Hair Colors', value: data.swapi_data.hair_colors, icon: User });
-        if (data.swapi_data?.eye_colors) details.push({ label: 'Eye Colors', value: data.swapi_data.eye_colors, icon: User });
+        if (data.swapi_data?.classification) details.push({ label: 'Classification', value: formatValue(data.swapi_data.classification), icon: Dna });
+        if (data.swapi_data?.designation) details.push({ label: 'Designation', value: formatValue(data.swapi_data.designation), icon: Dna });
+        if (data.swapi_data?.average_height) details.push({ label: 'Average Height', value: formatValueWithUnit(data.swapi_data.average_height, 'cm'), icon: Gauge });
+        if (data.swapi_data?.average_lifespan) details.push({ label: 'Average Lifespan', value: formatValueWithUnit(data.swapi_data.average_lifespan, 'years'), icon: Clock });
+        if (data.swapi_data?.language) details.push({ label: 'Language', value: formatValue(data.swapi_data.language), icon: Globe });
+        if (data.swapi_data?.skin_colors) details.push({ label: 'Skin Colors', value: formatValue(data.swapi_data.skin_colors), icon: User });
+        if (data.swapi_data?.hair_colors) details.push({ label: 'Hair Colors', value: formatValue(data.swapi_data.hair_colors), icon: User });
+        if (data.swapi_data?.eye_colors) details.push({ label: 'Eye Colors', value: formatValue(data.swapi_data.eye_colors), icon: User });
         break;
         
       case 'vehicles':
-        if (data.swapi_data?.model) details.push({ label: 'Model', value: data.swapi_data.model, icon: Car });
-        if (data.swapi_data?.manufacturer) details.push({ label: 'Manufacturer', value: data.swapi_data.manufacturer, icon: Wrench });
+        if (data.swapi_data?.model) details.push({ label: 'Model', value: formatValue(data.swapi_data.model), icon: Car });
+        if (data.swapi_data?.manufacturer) details.push({ label: 'Manufacturer', value: formatValue(data.swapi_data.manufacturer), icon: Wrench });
         if (data.swapi_data?.vehicle_class || data.swapi_data?.starship_class) {
-          details.push({ label: 'Class', value: data.swapi_data.vehicle_class || data.swapi_data.starship_class, icon: Car });
+          details.push({ label: 'Class', value: formatValue(data.swapi_data.vehicle_class || data.swapi_data.starship_class), icon: Car });
         }
-        if (data.swapi_data?.length) details.push({ label: 'Length', value: `${data.swapi_data.length} m`, icon: Gauge });
-        if (data.swapi_data?.cost_in_credits) details.push({ label: 'Cost', value: `${data.swapi_data.cost_in_credits} credits`, icon: DollarSign });
-        if (data.swapi_data?.crew) details.push({ label: 'Crew', value: data.swapi_data.crew, icon: Users });
-        if (data.swapi_data?.passengers) details.push({ label: 'Passengers', value: data.swapi_data.passengers, icon: Users });
-        if (data.swapi_data?.max_atmosphering_speed) details.push({ label: 'Max Speed', value: data.swapi_data.max_atmosphering_speed, icon: Zap });
-        if (data.swapi_data?.cargo_capacity) details.push({ label: 'Cargo Capacity', value: `${data.swapi_data.cargo_capacity} kg`, icon: Package });
-        if (data.swapi_data?.consumables) details.push({ label: 'Consumables', value: data.swapi_data.consumables, icon: Clock });
-        if (data.swapi_data?.hyperdrive_rating) details.push({ label: 'Hyperdrive Rating', value: data.swapi_data.hyperdrive_rating, icon: Zap });
-        if (data.swapi_data?.MGLT) details.push({ label: 'MGLT', value: data.swapi_data.MGLT, icon: Zap });
+        if (data.swapi_data?.length) details.push({ label: 'Length', value: formatValueWithUnit(data.swapi_data.length, 'm'), icon: Gauge });
+        if (data.swapi_data?.cost_in_credits && data.swapi_data.cost_in_credits !== 'unknown') {
+          details.push({ label: 'Cost', value: `${data.swapi_data.cost_in_credits} credits`, icon: DollarSign });
+        }
+        if (data.swapi_data?.crew) details.push({ label: 'Crew', value: formatValue(data.swapi_data.crew), icon: Users });
+        if (data.swapi_data?.passengers) details.push({ label: 'Passengers', value: formatValue(data.swapi_data.passengers), icon: Users });
+        if (data.swapi_data?.max_atmosphering_speed) details.push({ label: 'Max Speed', value: formatValue(data.swapi_data.max_atmosphering_speed), icon: Zap });
+        if (data.swapi_data?.cargo_capacity) details.push({ label: 'Cargo Capacity', value: formatValueWithUnit(data.swapi_data.cargo_capacity, 'kg'), icon: Package });
+        if (data.swapi_data?.consumables) details.push({ label: 'Consumables', value: formatValue(data.swapi_data.consumables), icon: Clock });
+        if (data.swapi_data?.hyperdrive_rating) details.push({ label: 'Hyperdrive Rating', value: formatValue(data.swapi_data.hyperdrive_rating), icon: Zap });
+        if (data.swapi_data?.MGLT) details.push({ label: 'MGLT', value: formatValue(data.swapi_data.MGLT), icon: Zap });
+        break;
+
+      case 'organizations':
+        if (data.type) details.push({ label: 'Type', value: formatValue(data.type), icon: Shield });
+        if (data.founded) details.push({ label: 'Founded', value: formatValue(data.founded), icon: Calendar });
+        if (data.dissolved) details.push({ label: 'Dissolved', value: formatValue(data.dissolved), icon: Calendar });
+        if (data.headquarters) details.push({ label: 'Headquarters', value: formatValue(data.headquarters), icon: MapPin });
+        if (data.leaders?.length) details.push({ label: 'Leaders', value: data.leaders.join(', '), icon: User });
         break;
     }
     
@@ -182,8 +205,6 @@ const EnhancedDetailModal: React.FC<EnhancedDetailModalProps> = ({ data, type, i
     switch (type) {
       case 'characters':
         return renderCharacterContent(data as EnhancedCharacter);
-      case 'films':
-        return renderFilmContent(data as EnhancedFilm);
       case 'locations':
         return renderLocationContent(data as EnhancedLocation);
       case 'species':
@@ -214,11 +235,11 @@ const EnhancedDetailModal: React.FC<EnhancedDetailModalProps> = ({ data, type, i
             <div className="mt-3 bg-gray-900/50 rounded-lg p-4 border border-gray-700">
               <h5 className="font-bold text-white mb-3 text-lg">{character.homeworld_details.name}</h5>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                <div><span className="text-gray-400">Climate:</span> <span className="text-white font-medium">{character.homeworld_details.climate}</span></div>
-                <div><span className="text-gray-400">Terrain:</span> <span className="text-white font-medium">{character.homeworld_details.terrain}</span></div>
-                <div><span className="text-gray-400">Population:</span> <span className="text-white font-medium">{character.homeworld_details.population}</span></div>
-                <div><span className="text-gray-400">Gravity:</span> <span className="text-white font-medium">{character.homeworld_details.gravity}</span></div>
-                <div><span className="text-gray-400">Diameter:</span> <span className="text-white font-medium">{character.homeworld_details.diameter} km</span></div>
+                <div><span className="text-gray-400">Climate:</span> <span className="text-white font-medium">{formatValue(character.homeworld_details.climate)}</span></div>
+                <div><span className="text-gray-400">Terrain:</span> <span className="text-white font-medium">{formatValue(character.homeworld_details.terrain)}</span></div>
+                <div><span className="text-gray-400">Population:</span> <span className="text-white font-medium">{formatValue(character.homeworld_details.population)}</span></div>
+                <div><span className="text-gray-400">Gravity:</span> <span className="text-white font-medium">{character.homeworld_details.gravity} standard</span></div>
+                <div><span className="text-gray-400">Diameter:</span> <span className="text-white font-medium">{formatValueWithUnit(character.homeworld_details.diameter, 'km')}</span></div>
                 <div><span className="text-gray-400">Surface Water:</span> <span className="text-white font-medium">{character.homeworld_details.surface_water}%</span></div>
               </div>
             </div>
@@ -226,28 +247,16 @@ const EnhancedDetailModal: React.FC<EnhancedDetailModalProps> = ({ data, type, i
         </div>
       )}
 
-      {renderExpandableSection('Films Appeared In', character.films || [], (film) => (
-        <div>
-          <h5 className="font-bold text-white text-lg mb-2">{film.title}</h5>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-2 text-sm">
-            <div><span className="text-gray-400">Episode:</span> <span className="text-white">{film.episode_id}</span></div>
-            <div><span className="text-gray-400">Release Date:</span> <span className="text-white">{new Date(film.release_date).toLocaleDateString()}</span></div>
-            <div><span className="text-gray-400">Director:</span> <span className="text-white">{film.director}</span></div>
-            <div><span className="text-gray-400">Producer:</span> <span className="text-white">{film.producer}</span></div>
-          </div>
-        </div>
-      ), Film)}
-
       {renderExpandableSection('Species Details', character.species_details || [], (species) => (
         <div>
           <h5 className="font-bold text-white text-lg mb-2">{species.name}</h5>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-2 text-sm">
-            <div><span className="text-gray-400">Classification:</span> <span className="text-white">{species.classification}</span></div>
-            <div><span className="text-gray-400">Designation:</span> <span className="text-white">{species.designation}</span></div>
-            <div><span className="text-gray-400">Average Lifespan:</span> <span className="text-white">{species.average_lifespan} years</span></div>
-            <div><span className="text-gray-400">Language:</span> <span className="text-white">{species.language}</span></div>
-            <div><span className="text-gray-400">Average Height:</span> <span className="text-white">{species.average_height} cm</span></div>
-            <div><span className="text-gray-400">Eye Colors:</span> <span className="text-white">{species.eye_colors}</span></div>
+            <div><span className="text-gray-400">Classification:</span> <span className="text-white">{formatValue(species.classification)}</span></div>
+            <div><span className="text-gray-400">Designation:</span> <span className="text-white">{formatValue(species.designation)}</span></div>
+            <div><span className="text-gray-400">Average Lifespan:</span> <span className="text-white">{formatValueWithUnit(species.average_lifespan, 'years')}</span></div>
+            <div><span className="text-gray-400">Language:</span> <span className="text-white">{formatValue(species.language)}</span></div>
+            <div><span className="text-gray-400">Average Height:</span> <span className="text-white">{formatValueWithUnit(species.average_height, 'cm')}</span></div>
+            <div><span className="text-gray-400">Eye Colors:</span> <span className="text-white">{formatValue(species.eye_colors)}</span></div>
           </div>
         </div>
       ), Dna)}
@@ -256,12 +265,12 @@ const EnhancedDetailModal: React.FC<EnhancedDetailModalProps> = ({ data, type, i
         <div>
           <h5 className="font-bold text-white text-lg mb-2">{starship.name}</h5>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-2 text-sm">
-            <div><span className="text-gray-400">Model:</span> <span className="text-white">{starship.model}</span></div>
-            <div><span className="text-gray-400">Class:</span> <span className="text-white">{starship.starship_class}</span></div>
-            <div><span className="text-gray-400">Manufacturer:</span> <span className="text-white">{starship.manufacturer}</span></div>
-            <div><span className="text-gray-400">Length:</span> <span className="text-white">{starship.length} m</span></div>
-            <div><span className="text-gray-400">Crew:</span> <span className="text-white">{starship.crew}</span></div>
-            <div><span className="text-gray-400">Hyperdrive Rating:</span> <span className="text-white">{starship.hyperdrive_rating}</span></div>
+            <div><span className="text-gray-400">Model:</span> <span className="text-white">{formatValue(starship.model)}</span></div>
+            <div><span className="text-gray-400">Class:</span> <span className="text-white">{formatValue(starship.starship_class)}</span></div>
+            <div><span className="text-gray-400">Manufacturer:</span> <span className="text-white">{formatValue(starship.manufacturer)}</span></div>
+            <div><span className="text-gray-400">Length:</span> <span className="text-white">{formatValueWithUnit(starship.length, 'm')}</span></div>
+            <div><span className="text-gray-400">Crew:</span> <span className="text-white">{formatValue(starship.crew)}</span></div>
+            <div><span className="text-gray-400">Hyperdrive Rating:</span> <span className="text-white">{formatValue(starship.hyperdrive_rating)}</span></div>
           </div>
         </div>
       ), Car)}
@@ -270,76 +279,12 @@ const EnhancedDetailModal: React.FC<EnhancedDetailModalProps> = ({ data, type, i
         <div>
           <h5 className="font-bold text-white text-lg mb-2">{vehicle.name}</h5>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-2 text-sm">
-            <div><span className="text-gray-400">Model:</span> <span className="text-white">{vehicle.model}</span></div>
-            <div><span className="text-gray-400">Class:</span> <span className="text-white">{vehicle.vehicle_class}</span></div>
-            <div><span className="text-gray-400">Manufacturer:</span> <span className="text-white">{vehicle.manufacturer}</span></div>
-            <div><span className="text-gray-400">Length:</span> <span className="text-white">{vehicle.length} m</span></div>
-            <div><span className="text-gray-400">Crew:</span> <span className="text-white">{vehicle.crew}</span></div>
-            <div><span className="text-gray-400">Max Speed:</span> <span className="text-white">{vehicle.max_atmosphering_speed}</span></div>
-          </div>
-        </div>
-      ), Car)}
-    </>
-  );
-
-  const renderFilmContent = (film: EnhancedFilm) => (
-    <>
-      {renderExpandableSection('Characters', film.characters || [], (character) => (
-        <div>
-          <h5 className="font-bold text-white text-lg mb-2">{character.name}</h5>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-2 text-sm">
-            <div><span className="text-gray-400">Birth Year:</span> <span className="text-white">{character.birth_year}</span></div>
-            <div><span className="text-gray-400">Gender:</span> <span className="text-white">{character.gender}</span></div>
-            <div><span className="text-gray-400">Height:</span> <span className="text-white">{character.height} cm</span></div>
-            <div><span className="text-gray-400">Eye Color:</span> <span className="text-white">{character.eye_color}</span></div>
-          </div>
-        </div>
-      ), Users)}
-
-      {renderExpandableSection('Planets', film.planets || [], (planet) => (
-        <div>
-          <h5 className="font-bold text-white text-lg mb-2">{planet.name}</h5>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-2 text-sm">
-            <div><span className="text-gray-400">Climate:</span> <span className="text-white">{planet.climate}</span></div>
-            <div><span className="text-gray-400">Terrain:</span> <span className="text-white">{planet.terrain}</span></div>
-            <div><span className="text-gray-400">Population:</span> <span className="text-white">{planet.population}</span></div>
-            <div><span className="text-gray-400">Diameter:</span> <span className="text-white">{planet.diameter} km</span></div>
-          </div>
-        </div>
-      ), Globe)}
-
-      {renderExpandableSection('Species', film.species || [], (species) => (
-        <div>
-          <h5 className="font-bold text-white text-lg mb-2">{species.name}</h5>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-2 text-sm">
-            <div><span className="text-gray-400">Classification:</span> <span className="text-white">{species.classification}</span></div>
-            <div><span className="text-gray-400">Average Height:</span> <span className="text-white">{species.average_height} cm</span></div>
-            <div><span className="text-gray-400">Language:</span> <span className="text-white">{species.language}</span></div>
-            <div><span className="text-gray-400">Average Lifespan:</span> <span className="text-white">{species.average_lifespan} years</span></div>
-          </div>
-        </div>
-      ), Dna)}
-
-      {renderExpandableSection('Starships', film.starships || [], (starship) => (
-        <div>
-          <h5 className="font-bold text-white text-lg mb-2">{starship.name}</h5>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-2 text-sm">
-            <div><span className="text-gray-400">Model:</span> <span className="text-white">{starship.model}</span></div>
-            <div><span className="text-gray-400">Class:</span> <span className="text-white">{starship.starship_class}</span></div>
-            <div><span className="text-gray-400">Length:</span> <span className="text-white">{starship.length} m</span></div>
-            <div><span className="text-gray-400">Crew:</span> <span className="text-white">{starship.crew}</span></div>
-          </div>
-        </div>
-      ), Car)}
-
-      {renderExpandableSection('Vehicles', film.vehicles || [], (vehicle) => (
-        <div>
-          <h5 className="font-bold text-white text-lg mb-2">{vehicle.name}</h5>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-2 text-sm">
-            <div><span className="text-gray-400">Model:</span> <span className="text-white">{vehicle.model}</span></div>
-            <div><span className="text-gray-400">Class:</span> <span className="text-white">{vehicle.vehicle_class}</span></div>
-            <div><span className="text-gray-400">Length:</span> <span className="text-white">{vehicle.length} m</span></div>
-            <div><span className="text-gray-400">Crew:</span> <span className="text-white">{vehicle.crew}</span></div>
+            <div><span className="text-gray-400">Model:</span> <span className="text-white">{formatValue(vehicle.model)}</span></div>
+            <div><span className="text-gray-400">Class:</span> <span className="text-white">{formatValue(vehicle.vehicle_class)}</span></div>
+            <div><span className="text-gray-400">Manufacturer:</span> <span className="text-white">{formatValue(vehicle.manufacturer)}</span></div>
+            <div><span className="text-gray-400">Length:</span> <span className="text-white">{formatValueWithUnit(vehicle.length, 'm')}</span></div>
+            <div><span className="text-gray-400">Crew:</span> <span className="text-white">{formatValue(vehicle.crew)}</span></div>
+            <div><span className="text-gray-400">Max Speed:</span> <span className="text-white">{formatValue(vehicle.max_atmosphering_speed)}</span></div>
           </div>
         </div>
       ), Car)}
@@ -353,23 +298,12 @@ const EnhancedDetailModal: React.FC<EnhancedDetailModalProps> = ({ data, type, i
           <h5 className="font-bold text-white text-lg mb-2">{resident.name}</h5>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-2 text-sm">
             <div><span className="text-gray-400">Birth Year:</span> <span className="text-white">{resident.birth_year}</span></div>
-            <div><span className="text-gray-400">Gender:</span> <span className="text-white">{resident.gender}</span></div>
-            <div><span className="text-gray-400">Height:</span> <span className="text-white">{resident.height} cm</span></div>
-            <div><span className="text-gray-400">Eye Color:</span> <span className="text-white">{resident.eye_color}</span></div>
+            <div><span className="text-gray-400">Gender:</span> <span className="text-white">{formatValue(resident.gender)}</span></div>
+            <div><span className="text-gray-400">Height:</span> <span className="text-white">{formatValueWithUnit(resident.height, 'cm')}</span></div>
+            <div><span className="text-gray-400">Eye Color:</span> <span className="text-white">{formatValue(resident.eye_color)}</span></div>
           </div>
         </div>
       ), Users)}
-
-      {renderExpandableSection('Films Featured In', location.films || [], (film) => (
-        <div>
-          <h5 className="font-bold text-white text-lg mb-2">{film.title}</h5>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-2 text-sm">
-            <div><span className="text-gray-400">Episode:</span> <span className="text-white">{film.episode_id}</span></div>
-            <div><span className="text-gray-400">Director:</span> <span className="text-white">{film.director}</span></div>
-            <div><span className="text-gray-400">Release Date:</span> <span className="text-white">{new Date(film.release_date).toLocaleDateString()}</span></div>
-          </div>
-        </div>
-      ), Film)}
     </>
   );
 
@@ -392,10 +326,10 @@ const EnhancedDetailModal: React.FC<EnhancedDetailModalProps> = ({ data, type, i
             <div className="mt-3 bg-gray-900/50 rounded-lg p-4 border border-gray-700">
               <h5 className="font-bold text-white mb-3 text-lg">{species.homeworld_details.name}</h5>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                <div><span className="text-gray-400">Climate:</span> <span className="text-white font-medium">{species.homeworld_details.climate}</span></div>
-                <div><span className="text-gray-400">Terrain:</span> <span className="text-white font-medium">{species.homeworld_details.terrain}</span></div>
-                <div><span className="text-gray-400">Population:</span> <span className="text-white font-medium">{species.homeworld_details.population}</span></div>
-                <div><span className="text-gray-400">Gravity:</span> <span className="text-white font-medium">{species.homeworld_details.gravity}</span></div>
+                <div><span className="text-gray-400">Climate:</span> <span className="text-white font-medium">{formatValue(species.homeworld_details.climate)}</span></div>
+                <div><span className="text-gray-400">Terrain:</span> <span className="text-white font-medium">{formatValue(species.homeworld_details.terrain)}</span></div>
+                <div><span className="text-gray-400">Population:</span> <span className="text-white font-medium">{formatValue(species.homeworld_details.population)}</span></div>
+                <div><span className="text-gray-400">Gravity:</span> <span className="text-white font-medium">{species.homeworld_details.gravity} standard</span></div>
               </div>
             </div>
           )}
@@ -407,23 +341,12 @@ const EnhancedDetailModal: React.FC<EnhancedDetailModalProps> = ({ data, type, i
           <h5 className="font-bold text-white text-lg mb-2">{person.name}</h5>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-2 text-sm">
             <div><span className="text-gray-400">Birth Year:</span> <span className="text-white">{person.birth_year}</span></div>
-            <div><span className="text-gray-400">Gender:</span> <span className="text-white">{person.gender}</span></div>
-            <div><span className="text-gray-400">Height:</span> <span className="text-white">{person.height} cm</span></div>
-            <div><span className="text-gray-400">Eye Color:</span> <span className="text-white">{person.eye_color}</span></div>
+            <div><span className="text-gray-400">Gender:</span> <span className="text-white">{formatValue(person.gender)}</span></div>
+            <div><span className="text-gray-400">Height:</span> <span className="text-white">{formatValueWithUnit(person.height, 'cm')}</span></div>
+            <div><span className="text-gray-400">Eye Color:</span> <span className="text-white">{formatValue(person.eye_color)}</span></div>
           </div>
         </div>
       ), Users)}
-
-      {renderExpandableSection('Films Featured In', species.films || [], (film) => (
-        <div>
-          <h5 className="font-bold text-white text-lg mb-2">{film.title}</h5>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-2 text-sm">
-            <div><span className="text-gray-400">Episode:</span> <span className="text-white">{film.episode_id}</span></div>
-            <div><span className="text-gray-400">Director:</span> <span className="text-white">{film.director}</span></div>
-            <div><span className="text-gray-400">Release Date:</span> <span className="text-white">{new Date(film.release_date).toLocaleDateString()}</span></div>
-          </div>
-        </div>
-      ), Film)}
     </>
   );
 
@@ -434,23 +357,12 @@ const EnhancedDetailModal: React.FC<EnhancedDetailModalProps> = ({ data, type, i
           <h5 className="font-bold text-white text-lg mb-2">{pilot.name}</h5>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-2 text-sm">
             <div><span className="text-gray-400">Birth Year:</span> <span className="text-white">{pilot.birth_year}</span></div>
-            <div><span className="text-gray-400">Gender:</span> <span className="text-white">{pilot.gender}</span></div>
-            <div><span className="text-gray-400">Height:</span> <span className="text-white">{pilot.height} cm</span></div>
-            <div><span className="text-gray-400">Eye Color:</span> <span className="text-white">{pilot.eye_color}</span></div>
+            <div><span className="text-gray-400">Gender:</span> <span className="text-white">{formatValue(pilot.gender)}</span></div>
+            <div><span className="text-gray-400">Height:</span> <span className="text-white">{formatValueWithUnit(pilot.height, 'cm')}</span></div>
+            <div><span className="text-gray-400">Eye Color:</span> <span className="text-white">{formatValue(pilot.eye_color)}</span></div>
           </div>
         </div>
       ), Users)}
-
-      {renderExpandableSection('Films Featured In', vehicle.films || [], (film) => (
-        <div>
-          <h5 className="font-bold text-white text-lg mb-2">{film.title}</h5>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-2 text-sm">
-            <div><span className="text-gray-400">Episode:</span> <span className="text-white">{film.episode_id}</span></div>
-            <div><span className="text-gray-400">Director:</span> <span className="text-white">{film.director}</span></div>
-            <div><span className="text-gray-400">Release Date:</span> <span className="text-white">{new Date(film.release_date).toLocaleDateString()}</span></div>
-          </div>
-        </div>
-      ), Film)}
     </>
   );
 
@@ -463,7 +375,7 @@ const EnhancedDetailModal: React.FC<EnhancedDetailModalProps> = ({ data, type, i
         <div className="relative">
           <img
             src={getImageUrl()}
-            alt={data.title || data.name || 'Unknown'}
+            alt={data.name || 'Unknown'}
             className="w-full h-64 object-cover"
             onError={(e) => {
               e.currentTarget.src = `https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=600&h=400&fit=crop&crop=top`;
@@ -484,7 +396,7 @@ const EnhancedDetailModal: React.FC<EnhancedDetailModalProps> = ({ data, type, i
                 <Icon size={32} className="text-blue-400" />
               </div>
               <div>
-                <h2 className="text-3xl font-bold text-white">{data.title || data.name || 'Unknown'}</h2>
+                <h2 className="text-3xl font-bold text-white">{data.name || 'Unknown'}</h2>
                 <p className="text-blue-300 capitalize">{type.replace('_', ' ')}</p>
               </div>
             </div>
@@ -494,10 +406,10 @@ const EnhancedDetailModal: React.FC<EnhancedDetailModalProps> = ({ data, type, i
         {/* Content */}
         <div className="p-6 max-h-[60vh] overflow-y-auto">
           {/* Description */}
-          {(data.description || data.opening_crawl) && (
+          {data.description && (
             <div className="mb-6">
               <h3 className="text-xl font-semibold text-white mb-3">Description</h3>
-              <p className="text-gray-300 leading-relaxed">{data.description || data.opening_crawl}</p>
+              <p className="text-gray-300 leading-relaxed">{data.description}</p>
             </div>
           )}
 
