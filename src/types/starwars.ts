@@ -98,6 +98,7 @@ export interface Vehicle {
 
 export interface Film {
   id: string;
+  name?: string; // Pour la compatibilité avec les autres ressources
   title: string;
   episode_id: number;
   opening_crawl: string;

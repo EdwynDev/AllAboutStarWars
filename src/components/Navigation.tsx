@@ -17,7 +17,7 @@ const Navigation: React.FC<NavigationProps> = ({
 }) => {
   const resources = [
     { id: 'characters' as ResourceType, label: 'Characters', icon: Users, count: '900+' },
-    { id: 'films' as ResourceType, label: 'Films', icon: Film, count: '6' },
+    { id: 'films' as ResourceType, label: 'Films', icon: Film, count: '6 Episodes' },
     { id: 'droids' as ResourceType, label: 'Droids', icon: Bot, count: '50+' },
     { id: 'species' as ResourceType, label: 'Species', icon: Dna, count: '80+' },
     { id: 'locations' as ResourceType, label: 'Locations', icon: MapPin, count: '300+' },

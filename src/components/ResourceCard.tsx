@@ -87,7 +87,7 @@ const ResourceCard: React.FC<ResourceCardProps> = ({ data, type, onViewDetails }
         />
         <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
         <div className="absolute bottom-3 left-3 right-3">
-          <h3 className="text-xl font-bold text-white mb-1">{data.name || 'Unknown'}</h3>
+          <h3 className="text-xl font-bold text-white mb-1">{data.name || data.title || 'Unknown'}</h3>
         </div>
       </div>
       

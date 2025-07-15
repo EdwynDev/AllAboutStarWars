@@ -310,8 +310,22 @@ export class EnhancedStarWarsAPI {
     ]);
 
     return Promise.all(swapiFilms.map(async (film): Promise<EnhancedFilm> => {
+      // Créer une image basée sur l'épisode
+      const getFilmImage = (episodeId: number) => {
+        const filmImages = {
+          1: 'https://images.unsplash.com/photo-1518709268805-4e9042af2176?w=600&h=400&fit=crop', // Episode I
+          2: 'https://images.unsplash.com/photo-1446776877081-d282a0f896e2?w=600&h=400&fit=crop', // Episode II
+          3: 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=600&h=400&fit=crop', // Episode III
+          4: 'https://images.unsplash.com/photo-1518709268805-4e9042af2176?w=600&h=400&fit=crop', // Episode IV
+          5: 'https://images.unsplash.com/photo-1446776877081-d282a0f896e2?w=600&h=400&fit=crop', // Episode V
+          6: 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=600&h=400&fit=crop', // Episode VI
+        };
+        return filmImages[episodeId] || 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=600&h=400&fit=crop';
+      };
+
       const enhancedFilm: EnhancedFilm = {
         id: SWAPIService.extractIdFromUrl(film.url)?.toString() || film.title,
+        name: film.title, // Ajouter le champ name pour la compatibilité
         title: film.title,
         episode_id: film.episode_id,
         opening_crawl: film.opening_crawl,
@@ -319,7 +333,7 @@ export class EnhancedStarWarsAPI {
         producer: film.producer,
         release_date: film.release_date,
         description: film.opening_crawl.substring(0, 200) + '...',
-        image: `https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=600&h=400&fit=crop&crop=top`,
+        image: getFilmImage(film.episode_id),
         swapi_data: film
       };
 
