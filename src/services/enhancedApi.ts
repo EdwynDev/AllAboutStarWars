@@ -30,6 +30,15 @@ export interface EnhancedVehicle extends Vehicle {
   films?: SWAPIFilm[];
 }
 
+export interface EnhancedFilm extends Film {
+  swapi_data?: SWAPIFilm;
+  characters?: SWAPICharacter[];
+  planets?: SWAPIPlanet[];
+  species?: SWAPISpecies[];
+  starships?: SWAPIStarship[];
+  vehicles?: SWAPIVehicle[];
+}
+
 export class EnhancedStarWarsAPI {
   private static swapiCache = new Map<string, any>();
   private static cacheTimeout = 5 * 60 * 1000; // 5 minutes
@@ -65,6 +74,15 @@ export class EnhancedStarWarsAPI {
         item.name.toLowerCase().includes(name.toLowerCase()) ||
         name.toLowerCase().includes(item.name.toLowerCase())
       );
+    }
+
+    // Special cases for common mismatches
+    if (!match && name.toLowerCase().includes('vader')) {
+      match = swapiData.find(item => item.name.toLowerCase().includes('vader'));
+    }
+    
+    if (!match && name.toLowerCase().includes('skywalker')) {
+      match = swapiData.find(item => item.name.toLowerCase().includes('skywalker'));
     }
 
     return match;
@@ -281,12 +299,80 @@ export class EnhancedStarWarsAPI {
     }));
   }
 
+  static async getEnhancedFilms(): Promise<EnhancedFilm[]> {
+    const [swapiFilms, swapiCharacters, swapiPlanets, swapiSpecies, swapiStarships, swapiVehicles] = await Promise.all([
+      this.getCachedOrFetch('swapi_films', () => SWAPIService.getAllFilms()),
+      this.getCachedOrFetch('swapi_characters', () => SWAPIService.getAllCharacters()),
+      this.getCachedOrFetch('swapi_planets', () => SWAPIService.getAllPlanets()),
+      this.getCachedOrFetch('swapi_species', () => SWAPIService.getAllSpecies()),
+      this.getCachedOrFetch('swapi_starships', () => SWAPIService.getAllStarships()),
+      this.getCachedOrFetch('swapi_vehicles', () => SWAPIService.getAllVehicles()),
+    ]);
+
+    return Promise.all(swapiFilms.map(async (film): Promise<EnhancedFilm> => {
+      const enhancedFilm: EnhancedFilm = {
+        id: SWAPIService.extractIdFromUrl(film.url)?.toString() || film.title,
+        title: film.title,
+        episode_id: film.episode_id,
+        opening_crawl: film.opening_crawl,
+        director: film.director,
+        producer: film.producer,
+        release_date: film.release_date,
+        description: film.opening_crawl.substring(0, 200) + '...',
+        image: `https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=600&h=400&fit=crop&crop=top`,
+        swapi_data: film
+      };
+
+      // Resolve characters
+      if (film.characters && film.characters.length > 0) {
+        enhancedFilm.characters = await this.resolveUrls(
+          film.characters,
+          SWAPIService.getCharacterById
+        );
+      }
+
+      // Resolve planets
+      if (film.planets && film.planets.length > 0) {
+        enhancedFilm.planets = await this.resolveUrls(
+          film.planets,
+          SWAPIService.getPlanetById
+        );
+      }
+
+      // Resolve species
+      if (film.species && film.species.length > 0) {
+        enhancedFilm.species = await this.resolveUrls(
+          film.species,
+          SWAPIService.getSpeciesById
+        );
+      }
+
+      // Resolve starships
+      if (film.starships && film.starships.length > 0) {
+        enhancedFilm.starships = await this.resolveUrls(
+          film.starships,
+          SWAPIService.getStarshipById
+        );
+      }
+
+      // Resolve vehicles
+      if (film.vehicles && film.vehicles.length > 0) {
+        enhancedFilm.vehicles = await this.resolveUrls(
+          film.vehicles,
+          SWAPIService.getVehicleById
+        );
+      }
+
+      return enhancedFilm;
+    }));
+  }
+
   static async getEnhancedResourceByType(type: ResourceType): Promise<any[]> {
     switch (type) {
       case 'characters':
         return this.getEnhancedCharacters();
       case 'films':
-        return this.getFilmsAsResource();
+        return this.getEnhancedFilms();
       case 'droids':
         return StarWarsAPI.getDroids(); // No SWAPI equivalent for droids specifically
       case 'species':
@@ -300,26 +386,5 @@ export class EnhancedStarWarsAPI {
       default:
         throw new Error(`Unknown resource type: ${type}`);
     }
-  }
-
-  // Get films as a separate resource
-  static async getFilms(): Promise<SWAPIFilm[]> {
-    return this.getCachedOrFetch('swapi_films', () => SWAPIService.getAllFilms());
-  }
-
-  static async getFilmsAsResource(): Promise<Film[]> {
-    const swapiFilms = await this.getFilms();
-    
-    return swapiFilms.map((film): Film => ({
-      id: SWAPIService.extractIdFromUrl(film.url)?.toString() || film.title,
-      title: film.title,
-      episode_id: film.episode_id,
-      opening_crawl: film.opening_crawl,
-      director: film.director,
-      producer: film.producer,
-      release_date: film.release_date,
-      description: film.opening_crawl.substring(0, 200) + '...',
-      image: `https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=600&h=400&fit=crop&crop=top`
-    }));
   }
 }
