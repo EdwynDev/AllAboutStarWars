@@ -1,7 +1,7 @@
 import React, { useState, useMemo } from 'react';
 import ResourceCard from './ResourceCard';
 import Pagination from './Pagination';
-import DetailModal from './DetailModal';
+import EnhancedDetailModal from './EnhancedDetailModal';
 import { ResourceType } from '../types/starwars';
 
 interface ResourceGridProps {
@@ -73,7 +73,7 @@ const ResourceGrid: React.FC<ResourceGridProps> = ({ data, type, searchQuery }) 
         itemsPerPage={itemsPerPage}
       />
       
-      <DetailModal
+      <EnhancedDetailModal
         data={selectedItem}
         type={type}
         isOpen={isModalOpen}

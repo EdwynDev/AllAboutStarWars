@@ -96,7 +96,19 @@ export interface Vehicle {
   affiliations?: string[];
 }
 
-export type ResourceType = 'characters' | 'droids' | 'species' | 'locations' | 'organizations' | 'vehicles';
+export interface Film {
+  id: string;
+  title: string;
+  episode_id: number;
+  opening_crawl: string;
+  director: string;
+  producer: string;
+  release_date: string;
+  description?: string;
+  image?: string;
+}
+
+export type ResourceType = 'characters' | 'films' | 'droids' | 'species' | 'locations' | 'organizations' | 'vehicles';
 
 export interface ApiResponse<T> {
   data: T[];

@@ -1,5 +1,5 @@
 import React from 'react';
-import { X, ExternalLink, Users, Bot, Dna, MapPin, Shield, Car } from 'lucide-react';
+import { X, ExternalLink, Users, Bot, Dna, MapPin, Shield, Car, Film } from 'lucide-react';
 import { ResourceType } from '../types/starwars';
 
 interface DetailModalProps {
@@ -14,6 +14,7 @@ const DetailModal: React.FC<DetailModalProps> = ({ data, type, isOpen, onClose }
 
   const getIcon = () => {
     switch (type) {
+      case 'films': return Film;
       case 'characters': return Users;
       case 'droids': return Bot;
       case 'species': return Dna;
@@ -35,6 +36,13 @@ const DetailModal: React.FC<DetailModalProps> = ({ data, type, isOpen, onClose }
     const details = [];
     
     switch (type) {
+      case 'films':
+        if (data.episode_id) details.push({ label: 'Episode', value: `Episode ${data.episode_id}` });
+        if (data.director) details.push({ label: 'Director', value: data.director });
+        if (data.producer) details.push({ label: 'Producer', value: data.producer });
+        if (data.release_date) details.push({ label: 'Release Date', value: data.release_date });
+        if (data.opening_crawl) details.push({ label: 'Opening Crawl', value: data.opening_crawl });
+        break;
       case 'characters':
         if (data.species) details.push({ label: 'Species', value: data.species });
         if (data.homeworld) details.push({ label: 'Homeworld', value: data.homeworld });

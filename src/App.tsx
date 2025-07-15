@@ -4,7 +4,7 @@ import Navigation from './components/Navigation';
 import ResourceGrid from './components/ResourceGrid';
 import ResourceHeader from './components/ResourceHeader';
 import LoadingSpinner from './components/LoadingSpinner';
-import { StarWarsAPI } from './services/api';
+import { EnhancedStarWarsAPI } from './services/enhancedApi';
 import { ResourceType } from './types/starwars';
 
 function App() {
@@ -21,7 +21,7 @@ function App() {
     
     try {
       console.log(`Loading data for: ${resource}`);
-      const result = await StarWarsAPI.getResourceByType(resource);
+      const result = await EnhancedStarWarsAPI.getEnhancedResourceByType(resource);
       console.log(`Received data:`, result);
       
       if (Array.isArray(result)) {

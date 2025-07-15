@@ -20,6 +20,13 @@ const ResourceCard: React.FC<ResourceCardProps> = ({ data, type, onViewDetails }
 
   const getDetails = () => {
     switch (type) {
+      case 'films':
+        return [
+          { label: 'Episode', value: `Episode ${data.episode_id}` },
+          { label: 'Director', value: data.director },
+          { label: 'Producer', value: data.producer },
+          { label: 'Release Date', value: data.release_date },
+        ];
       case 'characters':
         return [
           { label: 'Species', value: data.species },

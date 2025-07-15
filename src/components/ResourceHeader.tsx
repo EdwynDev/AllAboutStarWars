@@ -1,5 +1,5 @@
 import React from 'react';
-import { Users, Bot, Dna, MapPin, Shield, Car } from 'lucide-react';
+import { Users, Bot, Dna, MapPin, Shield, Car, Film } from 'lucide-react';
 import { ResourceType } from '../types/starwars';
 
 interface ResourceHeaderProps {
@@ -16,6 +16,13 @@ const ResourceHeader: React.FC<ResourceHeaderProps> = ({ resource, count }) => {
           title: 'Characters',
           description: 'Heroes, villains, and everyone in between from the Star Wars universe.',
           gradient: 'from-blue-500 to-cyan-500'
+        };
+      case 'films':
+        return {
+          icon: Film,
+          title: 'Films',
+          description: 'The epic saga of Star Wars movies and their stories.',
+          gradient: 'from-yellow-500 to-amber-500'
         };
       case 'droids':
         return {
