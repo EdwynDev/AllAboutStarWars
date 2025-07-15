@@ -463,7 +463,7 @@ const EnhancedDetailModal: React.FC<EnhancedDetailModalProps> = ({ data, type, i
         <div className="relative">
           <img
             src={getImageUrl()}
-            alt={data.name || data.title}
+            alt={data.title || data.name || 'Unknown'}
             className="w-full h-64 object-cover"
             onError={(e) => {
               e.currentTarget.src = `https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=600&h=400&fit=crop&crop=top`;

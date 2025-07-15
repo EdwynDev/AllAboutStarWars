@@ -151,7 +151,7 @@ const DetailModal: React.FC<DetailModalProps> = ({ data, type, isOpen, onClose }
                 <Icon size={32} className="text-blue-400" />
               </div>
               <div>
-                <h2 className="text-3xl font-bold text-white">{data.name || 'Unknown'}</h2>
+                <h2 className="text-3xl font-bold text-white">{data.name || data.title || 'Unknown'}</h2>
                 <p className="text-blue-300 capitalize">{type.replace('_', ' ')}</p>
               </div>
             </div>
